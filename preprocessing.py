@@ -5,37 +5,37 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 
-project_path = os.cwd() + "/"
-resized_folder = (project_path + "images_resized/")
-original_folder = (project_path + "images_original/")
-dirs = os.listdir(original_folder)
+project_path = str(os.getcwd()) + "\\"
+resized_folder = (project_path + "images_resized\\")
+# original_folder = (project_path + "images_original\\")
+dirs = os.listdir(resized_folder)
 
 
-def resize():
-    """
-    Resize all images to wXh, and convert RGBA to RGB (to save is as JPG)
-    """
-    w = 32
-    h = 32
-    for item in dirs:
-        if os.path.isfile(original_folder + item):
-            im = Image.open(original_folder + item)
-            im = im.convert('RGB')
-            imResize = im.resize((w, h), Image.ANTIALIAS)
-            imResize.save(resized_folder + item, 'JPEG', quality=90)
+# def resize():
+#     """
+#     Resize all images to wXh, and convert RGBA to RGB (to save is as JPG)
+#     """
+#     w = 32
+#     h = 32
+#     for item in dirs:
+#         if os.path.isfile(original_folder + item):
+#             im = Image.open(original_folder + item)
+#             im = im.convert('RGB')
+#             imResize = im.resize((w, h), Image.ANTIALIAS)
+#             imResize.save(resized_folder + item, 'JPEG', quality=90)
 
 
-def del_unknown():
-    """
-    Clean images that we haven't information about
-    """
-    details = pd.read_csv(project_path + "images.csv")
-    images_name = details.iloc[:, 0]
-    images_name = images_name.values.tolist()
-    for item in dirs:
-        f, e = os.path.splitext(item)
-        if f not in images_name:
-            os.remove(resized_folder + item)
+# def del_unknown():
+#     """
+#     Clean images that we haven't information about
+#     """
+#     details = pd.read_csv(project_path + "images.csv")
+#     images_name = details.iloc[:, 0]
+#     images_name = images_name.values.tolist()
+#     for item in dirs:
+#         f, e = os.path.splitext(item)
+#         if f not in images_name:
+#             os.remove(resized_folder + item)
 
 
 def get_data():
@@ -51,13 +51,14 @@ def get_data():
         if f in images_names:
             index = images_names.index(f)
             label = images_labels[index]
-            img = Image.open(project_path+"images_resized/"+item)
+            img = Image.open(project_path+"images_resized\\"+item)
             array = np.array(img)
             data.append(array)
             labels.append(label)
     return data, labels
 
-
+# def flat_data(X):
+#     return X
 
 def CNN(data, labels):
     # split the data in 60:20:20 for train:valid:test dataset
@@ -72,9 +73,9 @@ def CNN(data, labels):
     X_valid, X_test, y_valid, y_test = train_test_split(X_rem, y_rem, test_size=0.5)
 
 
-if __name__ == '__main__':
-    # resize()
-    # del_unknown()
-    data, labels = get_data()
-    # print(data)
-    CNN(data, labels)
+# if __name__ == '__main__':
+#     # resize()
+#     # del_unknown()
+#     data, labels = get_data()
+#     # print(data)
+#     CNN(data, labels)
