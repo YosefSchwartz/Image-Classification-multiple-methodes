@@ -60,18 +60,6 @@ def get_data():
 # def flat_data(X):
 #     return X
 
-def CNN(data, labels):
-    # split the data in 60:20:20 for train:valid:test dataset
-    train_size = 0.6
-
-    # In the first step we will split the data in training and remaining dataset
-    X_train, X_rem, y_train, y_rem = train_test_split(data, labels, train_size=0.6)
-
-    # Now since we want the valid and test size to be equal (20% each of overall data).
-    # we have to define valid_size=0.5 (that is 50% of remaining data)
-    test_size = 0.5
-    X_valid, X_test, y_valid, y_test = train_test_split(X_rem, y_rem, test_size=0.5)
-
 
 # if __name__ == '__main__':
 #     # resize()
