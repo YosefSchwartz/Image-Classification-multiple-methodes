@@ -1,10 +1,13 @@
-import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 import tensorflow as tf
+from keras.callbacks import Callback, LambdaCallback
 from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten, Conv2D, MaxPooling2D
 from tensorflow.keras.models import Sequential
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
 import matplotlib.pyplot as plt
 from keras.callbacks import LambdaCallback
 from tensorflow.keras.models import Sequential
@@ -14,6 +17,8 @@ def evaluate_test(model, X_test, y_test, test_acc, test_loss):
     res_test = model.evaluate(X_test, y_test)
     test_loss.append(res_test[0])
     test_acc.append(res_test[1])
+import numpy as np
+
 
 # KNN
 def k_nearest_neighbors(X_train, X_test, y_train, y_test):
@@ -90,22 +95,26 @@ def MultiLayer_Perceptron(x_train, x_test, y_train, y_test):
     plt.show()
 
 
-def CNN(x,y):
-    X = np.array(x)
-    X = X/255.0
+def evaluate_test(model, X_test, y_test,test_error, test_acc):
+    res_test = model.evaluate(X_test, y_test)
+    test_error.append(res_test[0])
+    test_acc.append(res_test[1])
+
+
+def CNN(X_train, X_test, y_train, y_test):
     model = Sequential()
 
-    model.add(Conv2D(256, (3, 3), input_shape=X.shape[1:]))
+    model.add(Conv2D(128, (3, 3), input_shape=X_train.shape[1:]))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
 
-    model.add(Conv2D(256, (3, 3)))
+    model.add(Conv2D(64, (3, 3)))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
 
     model.add(Flatten())  # this converts our 3D feature maps to 1D feature vectors
 
-    model.add(Dense(64))
+    model.add(Dense(32))
 
     model.add(Dense(1))
     model.add(Activation('sigmoid'))
@@ -113,21 +122,41 @@ def CNN(x,y):
     model.compile(loss='binary_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy'])
-    y = np.array(y)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    epochs = 4
+    test_error = []
+    test_acc = []
+    myCallback = LambdaCallback(on_epoch_end=lambda batch, logs: evaluate_test(model, X_test, y_test, test_error, test_acc))
+    details = model.fit(X_train, y_train, batch_size=32, epochs=epochs, validation_split=0.214, callbacks=[myCallback])
 
-    print("before fit")
-    model.fit(X_train, y_train, batch_size=32, epochs=3, validation_split=0.25)
-    print("after fit")
+    val_acc_list = details.history['val_accuracy']
+    acc_list = details.history['accuracy']
+    loss_list = details.history['loss']
+    val_loss_list = details.history['val_loss']
+    results = model.evaluate(X_test, y_test, verbose=0)
 
-    model.evaluate(X_test, y_test, batch_size=32)
+    print("final accuracy: {:5.2f}%".format(100 * results[1]))
 
+    x_axis = []
+    k = 1
+    for i in range(1, epochs + 1):
+        x_axis.append(k)
+        k = k + 1
 
+    # Loss graph
+    plt.plot(x_axis, test_error, label="test loss")
+    plt.plot(x_axis, val_loss_list, label="validation loss")
+    plt.plot(x_axis, loss_list, label="train loss")
+    plt.xlabel('epochs')
+    plt.ylabel('value')
+    plt.title('train and validation loss')
+    plt.legend()
+    plt.show()
 
 # SVM
 def Support_Vector_Machine(x_train, x_test, y_train, y_test, sample_of_data=False):
     ##########################
+    # if sample_of_data is true we sample 10% from the hole data
     if sample_of_data is True:
         num_train = len(x_train) // 10
         num_test = len(x_test) // 10
@@ -150,3 +179,13 @@ def Support_Vector_Machine(x_train, x_test, y_train, y_test, sample_of_data=Fals
     test_acc = 100 * np.sum(prediction == y_test) / len(y_test)
     print('SVM: train accuracy = {:.2f}%, '
           'test accuracy = {:.2f}%'.format(train_acc, test_acc))
+
+
+def logistic(X_train, X_test, Y_train, Y_test):
+    X_train = X_train[0:3200]
+    Y_train = Y_train[0:3200]
+
+    model =LogisticRegression(max_iter=100000)
+    model.fit(X_train, Y_train)
+    print("final accuracy: {:5.2f}%".format(100 * model.score(X_test, Y_test)))
+
