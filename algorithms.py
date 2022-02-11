@@ -17,6 +17,7 @@ def evaluate_test(model, X_test, y_test, test_acc, test_loss):
     res_test = model.evaluate(X_test, y_test)
     test_loss.append(res_test[0])
     test_acc.append(res_test[1])
+
 import numpy as np
 
 
@@ -49,7 +50,10 @@ def k_nearest_neighbors(X_train, X_test, y_train, y_test):
 def MultiLayer_Perceptron(x_train, x_test, y_train, y_test):
     model = Sequential([
         # dense layer 1
+
+        Dense(1024, activation='relu'),
         Dense(512, activation='relu'),
+        Dense(256, activation='relu'),
 
         # output layer
         Dense(1, activation='sigmoid'),
@@ -61,7 +65,7 @@ def MultiLayer_Perceptron(x_train, x_test, y_train, y_test):
     test_acc = []
     test_loss = []
     myCallback = LambdaCallback(on_epoch_end=lambda batch, logs: evaluate_test(model, x_test, y_test, test_acc, test_loss))
-    details = model.fit(x_train, y_train, epochs=epochs, batch_size=32, validation_split=0.25, callbacks=[myCallback])
+    details = model.fit(x_train, y_train, epochs=epochs, batch_size=128, validation_split=0.25, callbacks=[myCallback])
 
     val_acc_list = details.history['val_accuracy']
     acc_list = details.history['accuracy']
@@ -95,13 +99,12 @@ def MultiLayer_Perceptron(x_train, x_test, y_train, y_test):
     plt.show()
 
 
-def evaluate_test(model, X_test, y_test,test_error, test_acc):
-    res_test = model.evaluate(X_test, y_test)
-    test_error.append(res_test[0])
-    test_acc.append(res_test[1])
-
-
 def CNN(X_train, X_test, y_train, y_test):
+    ROW = 32
+    COL = 32
+    CHANNEL = 3
+    X_train = X_train.reshape(X_train.shape[0], ROW, COL, CHANNEL)
+    X_test = X_test.reshape(X_test.shape[0], ROW, COL, CHANNEL)
     model = Sequential()
 
     model.add(Conv2D(128, (3, 3), input_shape=X_train.shape[1:]))
@@ -123,11 +126,11 @@ def CNN(X_train, X_test, y_train, y_test):
                   optimizer='adam',
                   metrics=['accuracy'])
 
-    epochs = 4
+    epochs = 6
     test_error = []
     test_acc = []
-    myCallback = LambdaCallback(on_epoch_end=lambda batch, logs: evaluate_test(model, X_test, y_test, test_error, test_acc))
-    details = model.fit(X_train, y_train, batch_size=32, epochs=epochs, validation_split=0.214, callbacks=[myCallback])
+    myCallback = LambdaCallback(on_epoch_end=lambda batch, logs: evaluate_test(model, X_test, y_test, test_acc, test_error))
+    details = model.fit(X_train, y_train, batch_size=128, epochs=epochs, validation_split=0.214, callbacks=[myCallback])
 
     val_acc_list = details.history['val_accuracy']
     acc_list = details.history['accuracy']
@@ -153,6 +156,17 @@ def CNN(X_train, X_test, y_train, y_test):
     plt.legend()
     plt.show()
 
+    # Accuracy graph
+    plt.plot(x_axis, test_acc, label="test accuracy")
+    plt.plot(x_axis, val_acc_list, label="validation accuracy")
+    plt.plot(x_axis, acc_list, label="train accuracy")
+    plt.xlabel('epochs')
+    plt.ylabel('value')
+    plt.title('train and validation accuracy')
+    plt.legend()
+    plt.show()
+
+
 # SVM
 def Support_Vector_Machine(x_train, x_test, y_train, y_test, sample_of_data=False):
     ##########################
@@ -169,7 +183,7 @@ def Support_Vector_Machine(x_train, x_test, y_train, y_test, sample_of_data=Fals
         y_test = y_test[test_indices]
     #############################################
     # Run SVM for classification
-    model = SVC(C=1, kernel="linear", gamma="auto")
+    model = SVC(C=1, kernel="poly", gamma="auto")
     model.fit(x_train, y_train)
 
     # Check the accuracy on train and test
@@ -187,5 +201,5 @@ def logistic(X_train, X_test, Y_train, Y_test):
 
     model =LogisticRegression(max_iter=100000)
     model.fit(X_train, Y_train)
-    print("final accuracy: {:5.2f}%".format(100 * model.score(X_test, Y_test)))
+    print("Final accuracy: {:5.2f}%".format(100 * model.score(X_test, Y_test)))
 

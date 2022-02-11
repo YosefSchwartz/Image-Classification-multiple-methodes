@@ -64,7 +64,7 @@ def get_data():
     labels = np.array(labels)
 
     X_train, X_test, y_train, y_test = train_test_split(
-        data, labels, test_size=0.2, random_state=42)
+        data, labels, test_size=0.2)
 
     return X_train, X_test, y_train, y_test
 
