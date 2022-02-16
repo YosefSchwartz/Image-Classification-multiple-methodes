@@ -2,6 +2,7 @@ from PIL import Image
 import os, sys
 import pandas as pd
 import numpy as np
+import random
 from sklearn.model_selection import train_test_split
 
 
@@ -46,6 +47,7 @@ def get_data():
     images_names = images_names.values.tolist()
     images_labels = details.iloc[:, 3]
     images_labels = images_labels.values.tolist()
+    kids_clothes = images_labels.count(1)
     for item in dirs_resize:
         f, e = os.path.splitext(item)
         if f in images_names:
@@ -53,8 +55,13 @@ def get_data():
             label = images_labels[index]
             img = Image.open(project_path+"images_resized\\"+item)
             array = np.array(img)
-            data.append(array)
-            labels.append(label)
+            if label == 1:
+                data.append(array)
+                labels.append(label)
+            elif kids_clothes > 0:
+                data.append(array)
+                labels.append(label)
+                kids_clothes = kids_clothes - 1
 
     data = np.array(data)
     data = data.reshape((data.shape[0], -1))

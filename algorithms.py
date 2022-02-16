@@ -183,7 +183,7 @@ def Support_Vector_Machine(x_train, x_test, y_train, y_test, sample_of_data=Fals
         y_test = y_test[test_indices]
     #############################################
     # Run SVM for classification
-    model = SVC(C=1, kernel="poly", gamma="auto")
+    model = SVC(C=1, kernel="linear", gamma="auto")
     model.fit(x_train, y_train)
 
     # Check the accuracy on train and test
@@ -196,10 +196,7 @@ def Support_Vector_Machine(x_train, x_test, y_train, y_test, sample_of_data=Fals
 
 
 def logistic(X_train, X_test, Y_train, Y_test):
-    X_train = X_train[0:3200]
-    Y_train = Y_train[0:3200]
-
     model =LogisticRegression(max_iter=100000)
     model.fit(X_train, Y_train)
-    print("Final accuracy: {:5.2f}%".format(100 * model.score(X_test, Y_test)))
+    print("Final accuracy: {:.2f}%".format(100 * model.score(X_test, Y_test)))
 

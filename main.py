@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # MultiLayer_Perceptron(x_train, x_test, y_train, y_test)
 
     # CNN
-    CNN(x_train, x_test, y_train, y_test)
+    # CNN(x_train, x_test, y_train, y_test)
 
     #logistic regression
     # logistic(x_train, x_test, y_train, y_test)
@@ -35,5 +35,5 @@ if __name__ == '__main__':
     # k_nearest_neighbors(x_train, x_test, y_train, y_test)
 
     # KNN after PCA
-    # k_nearest_neighbors(x_train_2D, x_test_2D, y_train, y_test, True)
+    # k_nearest_neighbors(x_train_2D, x_test_2D, y_train, y_test)
 
