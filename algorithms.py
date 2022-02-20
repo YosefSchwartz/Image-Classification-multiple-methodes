@@ -23,7 +23,7 @@ import numpy as np
 
 # KNN
 def k_nearest_neighbors(X_train, X_test, y_train, y_test):
-    neighbors = np.arange(1, 12)
+    neighbors = np.arange(1, 20)
     train_accuracy = np.empty(len(neighbors))
     test_accuracy = np.empty(len(neighbors))
 
@@ -107,6 +107,10 @@ def CNN(X_train, X_test, y_train, y_test):
     X_test = X_test.reshape(X_test.shape[0], ROW, COL, CHANNEL)
     model = Sequential()
 
+    model.add(Conv2D(256, (3, 3), input_shape=X_train.shape[1:]))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+
     model.add(Conv2D(128, (3, 3), input_shape=X_train.shape[1:]))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -171,16 +175,16 @@ def CNN(X_train, X_test, y_train, y_test):
 def Support_Vector_Machine(x_train, x_test, y_train, y_test, sample_of_data=False):
     ##########################
     # if sample_of_data is true we sample 10% from the hole data
-    if sample_of_data is True:
-        num_train = len(x_train) // 10
-        num_test = len(x_test) // 10
-        train_indices = np.random.randint(0, len(x_train), num_train)
-        test_indices = np.random.randint(0, len(x_test), num_test)
-
-        x_train = x_train[train_indices, :]
-        y_train = y_train[train_indices]
-        x_test = x_test[test_indices, :]
-        y_test = y_test[test_indices]
+    # if sample_of_data is True:
+    #     num_train = len(x_train) // 10
+    #     num_test = len(x_test) // 10
+    #     train_indices = np.random.randint(0, len(x_train), num_train)
+    #     test_indices = np.random.randint(0, len(x_test), num_test)
+    #
+    #     x_train = x_train[train_indices, :]
+    #     y_train = y_train[train_indices]
+    #     x_test = x_test[test_indices, :]
+    #     y_test = y_test[test_indices]
     #############################################
     # Run SVM for classification
     model = SVC(C=1, kernel="linear", gamma="auto")
